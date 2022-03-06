@@ -1,3 +1,4 @@
+from requests import exceptions
 from flask import Flask # módulo utilizao para criar um web service / api
 from consulta_cep import cep_to_bairro
 
@@ -5,16 +6,39 @@ from consulta_cep import cep_to_bairro
 app = Flask(__name__) #instancio um objeto chamado app
 #uma burocracia que a gente faz sempre
 
-#o meu servidor tem uma URL bairro
-# eu firefox -> meu servidor -> viacep
-#            <-               <-
+bairros_atende = ["Barra Funda", "Lapa", "Parque Residencial da Lapa", "Vila Invernada"]
+
+
+# Consulta o CEP no Via CEP e retorna o nome do bairro caso a requisição tenha
+# sucesso
 @app.route("/bairro/<cep>")
 def bairro(cep):
-    bairro = cep_to_bairro(cep)
-    return {"bairro": bairro, "status": "ok"}
-    #TODO tratar o erro, devolvendo um dicionario mais informativo para o usuario, e um status code 500
+    try:
+        resposta = cep_to_bairro(cep)
+    except exceptions.HTTPError as err:
+        return {"status": err.response.status_code, "resp":'', "info": err.args[0]}
+    return {"status": 200,"resp": resposta, "info": "Este e o bairro do CEP"}
 
-bairros_atende = ["Barra Funda", "Lapa", "Parque Residencial da Lapa", "Vila Invernada"]
+
+# adiciona um bairro na lista de bairros que a empresa atende
+@app.route("/bairros/<nome>", methods=["PUT"])
+def add_bairro(nome):
+    if nome not in bairros_atende:
+        bairros_atende.append(nome)
+        return {"status": 200, "resp": "sucesso", "info": "bairro adicionado com sucesso à base de dados"}
+    else:
+        return {"status": 409, "resp": "conflito", "info": "bairro já está cadastrado na base de dados"}
+
+
+
+
+
+
+
+
+
+
+
 
 #o meu servidor tem uma URL bairro
 # eu firefox -> meu servidor -> viacep
@@ -24,15 +48,7 @@ def atende(cep):
     bairro = cep_to_bairro(cep)
     return {"atende": bairro in bairros_atende, "status": "ok"}
 
-#adiciona um bairro, pra eu nao precisar ficar mexendo no codigo pra adicionar
-#bairros. Mas isso eu vou mostrar mais pra frente (se quiser brincar com isso
-# aprenda primeiro como funciona a biblioteca requests)
-@app.route("/bairros/<nome>", methods=["PUT"])
-def add_bairro(nome):
-    if nome not in bairros_atende:
-        bairros_atende.append(nome)
-        return {"bairro_adicionado": nome, "status": "ok"}
-    #TODO: adicionar tratamento de erro se o bairro já está na lista. Status code 400.
+
 
 #TODO adicionar remoção de bairro
 
