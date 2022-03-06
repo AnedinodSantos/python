@@ -12,6 +12,8 @@ consultorias. O nosso foco é só disponibilizar a API de forma geral.
 
 Teremos algumas funcionalidades simples como:
 
-- adicionar bairros que a empresa atende
-- listagem de bairros atendidos
-- encontrar um bairro atendido pelo CEP
+- adicionar bairro na lista de bairros que a empresa atende
+- remover bairro da lista
+- listar bairros que a empresa atende
+- encontrar um bairro que a empresa atende pelo CEP
+- encontrar um bairro que a empresa atende pelo nome
