@@ -1,18 +1,8 @@
-import requests # módulo utilizado para fazer requisições
 from flask import Flask # módulo utilizao para criar um web service / api
+from consulta_cep import cep_to_bairro
 
-#usa a biblioteca requests para abrir uma conexao com o viacep
-def cep_to_bairro(cep):
-     url = f"https://viacep.com.br/ws/{cep}/json/"
-     response = requests.get(url)
-     if response.status_code != 200:
-         pass #TODO, lançar um erro
-     dicionario_retornado = response.json()
-     return dicionario_retornado['bairro']
 
-#rodando cep_to_bairro("01136000"), devemos receber "barra funda"
-
-app = Flask(__name__) #gerar um objeto chamado app
+app = Flask(__name__) #instancio um objeto chamado app
 #uma burocracia que a gente faz sempre
 
 #o meu servidor tem uma URL bairro
